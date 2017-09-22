@@ -6,10 +6,15 @@ let loadedShelves;
 let currentPage;
 
 
-$(document).ready(()=>{
+$(document).ready(() => {
   $("form").submit(submitId);
   $(".main-wrapper").hide();
   $(".splash-wrapper").show();
+  $(document).keypress((ev) => {
+    if (ev.which === 126) {
+      $('input').val(6709088);
+    }
+  });
 });
 
 
@@ -34,7 +39,7 @@ function newUser() {
   id = id.replace(/[^0-9]/g, '')
   if (id.length) {
     $('.thinking-wrapper').show();
-    lookupID(id,displayUser);
+    lookupID(id, displayUser);
   } else {
     Materialize.toast('Please enter a numeric id first!', 4000, 'error');
     $('input').val('');
@@ -46,16 +51,19 @@ function noSuchUser(id) {
   $('.thinking-wrapper').hide();
   Materialize.toast(`Could not find a user with an id of ${id}!`, 4000, 'error');
 }
+
 function corsError() {
   $('.thinking-wrapper').hide();
   Materialize.toast('Make sure your CORS extension is turned on!', 4000, 'error');
 }
+
 function noBooks(name) {
   $(USER_INPUT).val(currentUser);
   $('.thinking-wrapper').hide();
   if (!name.length) name = "That user";
   Materialize.toast(`${name} has not added any books!`, 4000, 'error');
 }
+
 function genericError() {
   $('.thinking-wrapper').hide();
   Materialize.toast(`There was a problem. Check your API keys and input, and try again.`, 4000, 'error');
@@ -73,7 +81,7 @@ function displayUser(obj) {
     $('.info-wrapper').show();
     currentUser = user.children('id').text();
     let imageUrl = user.children('image_url').text();
-    $('.user-info img').attr('src',imageUrl);
+    $('.user-info img').attr('src', imageUrl);
     $('.user-info h4').text(name);
     $('.user-info p').text(`Book Count: ${bookCount}`);
     displayShelves(user.children('user_shelves').children());
@@ -88,7 +96,7 @@ function displayShelves(shelves) {
     let shelfName = $(shelf).children('name').text();
     let a = $(`<a>${shelfName}</a>`);
     $(a).addClass('collection-item');
-    $(a).attr('id',`${shelfName}-nav`);
+    $(a).attr('id', `${shelfName}-nav`);
     $(a).click(displayShelf);
     div.append(a);
   }
@@ -97,7 +105,7 @@ function displayShelves(shelves) {
 
 function displayShelf(ev) {
   let shelfName = ev.target.id;
-  shelfName = shelfName.substring(0,shelfName.indexOf('-nav'));
+  shelfName = shelfName.substring(0, shelfName.indexOf('-nav'));
   let shelf = $(`.tab-${shelfName}`);
   if (!loadedShelves[shelfName]) createShelf(shelfName);
   else {
@@ -107,14 +115,14 @@ function displayShelf(ev) {
   }
 }
 
-function createShelf(shelfName, page=1) {
+function createShelf(shelfName, page = 1) {
   currentPage = page;
   if (loadedShelves[shelfName] === false) { //not falsey, but false
     Materialize.toast(`The ${shelfName} shelf is empty!`, 4000, 'error');
     return;
   };
   $('.thinking-wrapper').show();
-  lookupShelf(currentUser, shelfName, page, (obj)=>{
+  lookupShelf(currentUser, shelfName, page, (obj) => {
     let totalBookCount = +$(obj).find('reviews').attr('total');
     let loadedBooks = $(obj).find('reviews').children();
     if (!totalBookCount) {
@@ -163,9 +171,9 @@ function paginate(shelfName, pageCount) {
     pagination += '<li class="waves-effect"><a href="#"><i class="material-icons">chevron_right</i></a></li></ul>';
     $(`#shelf-${shelfName}`).append(pagination);
 
-    $('.pagination a').click((ev)=>{
-      if ($(ev.target).parent().parent().hasClass('disabled')
-          || $(ev.target).text() == currentPage) {
+    $('.pagination a').click((ev) => {
+      if ($(ev.target).parent().parent().hasClass('disabled') ||
+        $(ev.target).text() == currentPage) {
         return;
       }
       $('.thinking-wrapper').show();
@@ -178,7 +186,7 @@ function paginate(shelfName, pageCount) {
       let pageLinks = $('.pagination li');
       let disabledLinks = [];
       if (newPage === 1) disabledLinks.push(0);
-      if (newPage === pageCount) disabledLinks.push(pageCount+1);
+      if (newPage === pageCount) disabledLinks.push(pageCount + 1);
       for (let i = 0; i < pageLinks.length; i++) {
         let link = $(pageLinks[i]);
         if (i === newPage) {
@@ -193,7 +201,7 @@ function paginate(shelfName, pageCount) {
           link.addClass('waves-effect');
         }
       }
-      createShelf(shelfName,newPage);
+      createShelf(shelfName, newPage);
     })
   }
 }
@@ -219,15 +227,21 @@ function insertBook(book, view) {
   } else {
     $(innerDiv).append(`<span class="stars tooltipped" data-position="top" data-delay="50" data-tooltip="User Rating: ${rating} - Average Rating: ${avgRating}">${rating}</span>`);
   }
-  $('.tooltipped').tooltip({delay: 50});
+  $('.tooltipped').tooltip({
+    delay: 50
+  });
 
   if (LOAD_AMAZON_PRICES) {
     $(innerDiv).append(`<span>Amazon: <span class='price'>loading...</span>`);
-    getAmazonPrice({'title':title,'author':author,'isbn':isbn},(item)=>{
+    getAmazonPrice({
+      'title': title,
+      'author': author,
+      'isbn': isbn
+    }, (item) => {
       let priceContainer = $(div).find('.price');
       if (item.price.length) {
         $(priceContainer).html(`<a href=${item.url} target="_blank">${item.price}</a>`);
-      } else if (item.url.length){
+      } else if (item.url.length) {
         $(priceContainer).html(`<a href='${item.url} target="_blank"'>Not available.</a>`);
       } else {
         $(priceContainer).html(`Not available.`);
@@ -240,8 +254,8 @@ function insertBook(book, view) {
 function stringifyAuthors(authors) {
   let str = '';
   for (let i = 0; i < authors.length; i++) {
-    str+=$(authors[i]).find('name').text();
-    if (i < authors.length-1) str+= ', ';
+    str += $(authors[i]).find('name').text();
+    if (i < authors.length - 1) str += ', ';
   }
   return str;
 }
@@ -254,9 +268,9 @@ function displayEmptyShelf(shelfName) {
 }
 
 $.fn.stars = function() {
-    return $(this).each(function() {
-        $(this).html($('<span />').width(Math.max(0, (Math.min(5, parseFloat($(this).html())))) * 16));
-    });
+  return $(this).each(function() {
+    $(this).html($('<span />').width(Math.max(0, (Math.min(5, parseFloat($(this).html())))) * 16));
+  });
 }
 
 const truncateTitle = (title) => {
