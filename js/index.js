@@ -81,7 +81,6 @@ function displayUser(obj) {
 }
 
 function displayShelves(shelves) {
-  //reset tabs and views;
   $('.result-container').html(`<ul class="tabs"><li class="tab col s3"><a href="#bookshelves-view" class='active'>Bookshelves</a></li></ul><div id="bookshelves-view" class="col s12"></div>`);
   let div = $('<div>');
   $(div).addClass('collection shelves');
@@ -105,8 +104,6 @@ function displayShelf(ev) {
     $(`.shelf-tab`).hide();
     $(`.tab-${shelfName}`).show();
     $('ul.tabs').tabs('select_tab', `shelf-${shelfName}`);
-    // $('ul.tabs').tabs('select_tab', 'bookshelves-view');
-    // $('ul.tabs').tabs('select_tab', `shelf-${shelfName}`);
   }
 }
 
@@ -136,8 +133,6 @@ function createShelf(shelfName, page=1) {
         let tabs = $('ul.tabs');
         $(tabs).append(tab);
         $(tabs).tabs();
-        $(tabs).tabs('select_tab', `shelf-${shelfName}`);
-        $(tabs).tabs('select_tab', 'bookshelves-view');
         $(tabs).tabs('select_tab', `shelf-${shelfName}`);
       } else {
         view = $(`#shelf-${shelfName} .collection`);
@@ -252,7 +247,6 @@ function stringifyAuthors(authors) {
 }
 
 function displayEmptyShelf(shelfName) {
-  //find shelf name in shelves list and append ' (empty)'; TODO
   $(`#${shelfName}-nav`).append(' (empty)');
   $('.thinking-wrapper').hide();
   loadedShelves[shelfName] = false;

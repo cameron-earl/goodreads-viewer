@@ -1,5 +1,4 @@
-//functions and variables that relate to Amazon API requests
-
+//Keys must be initialized for this to function.
 let AMAZON_PUBLIC_KEY;
 let AMAZON_PRIVATE_KEY;
 let AMAZON_TAG;
@@ -27,7 +26,6 @@ function objToArgString(argsObj) {
     args.push(author.length ? `Author=${author}` : '');
   }
   if (argsObj.title && argsObj.title.length) {
-    //encode here;
     args.push(`Title=${argsObj.title}`);
   }
   if (argsObj.isbn && argsObj.isbn.length) {
@@ -73,7 +71,7 @@ function completeAmazonRequest(url,callback) {
 
 function generateQueryArgs(operation, customArgs) {
   let standardArgs = `Service=AWSECommerceService&AWSAccessKeyId=${AMAZON_PUBLIC_KEY}&Version=2013-08-01&AssociateTag=${AMAZON_TAG}`;
-  //They disabled price search with kindle books! SearchIndex=KindleStore :(
+  //They don't allow price search on kindle books! SearchIndex=KindleStore :(
   if (operation === 'ItemSearch') standardArgs += '&SearchIndex=Books';
   if (operation === 'ItemLookup') standardArgs += '&ResponseGroup=Offers'
   let args = standardArgs + '&Operation=' + operation + '&'+ customArgs;

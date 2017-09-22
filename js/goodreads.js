@@ -1,7 +1,5 @@
-// functions and variables that relate to Goodreads API requests
-
+//Keys must be initialized for this to function.
 let GOODREADS_PUBLIC_KEY;
-let GOODREADS_USER_ID;
 
 function lookupID(userID,callback) {
   let url = `https://www.goodreads.com/user/show/${userID}.xml?key=${GOODREADS_PUBLIC_KEY}`;
