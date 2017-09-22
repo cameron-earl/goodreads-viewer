@@ -6,20 +6,42 @@ let AMAZON_PRIVATE_KEY;
 let AMAZON_TAG;
 
 //Finds the price of an book described by the object (ISBN, Title, Author)
-function getAmazonPrice(argsObj, callback) {
-  let asin;
+function getItemPrice(item, callback) {
+  let asin = getItemAsin(item);
+  getOffer(asin, (offer)=>{
+    let price = getOfferPrice(offer);
+    callback(price);
+  })
+}
+
+function findItem(argsObj, callback) {
   let args = objToArgString(argsObj);
   makeAmazonRequest('ItemSearch', args, (response) => {
-    let items = $(response).find('Item');
-    let asin = $(items[0]).find('ASIN').text();
-    let url = $($(items[0]).find('ItemLink')[0]).find('URL').text();
-    makeAmazonRequest('ItemLookup', `ItemId=${asin}`, (lookup) => {
-      let price = $(lookup).find('LowestNewPrice>FormattedPrice').text();
-      callback({
-        'price': price,
-        'url': url
-      });
-    })
+    callback($(response).find('Item')[0]);
+  });
+}
+
+function getItemAsin(item) {
+  return $(item).find('ASIN').text();
+}
+
+function getItemUrl(item) {
+  return $($(item).find('ItemLink')[0]).find('URL').text();
+}
+
+function getOffer(asin, callback) {
+  makeAmazonRequest('ItemLookup', `ItemId=${asin}`, (offer) => {
+    callback(offer);
+  })
+}
+
+function getOfferPrice(offer) {
+  return $(offer).find('LowestNewPrice>FormattedPrice').text();
+}
+
+function getItemImages(asin, callback) {
+  makeAmazonRequest('ItemLookup',`ResponseGroup=Images&ItemId=${asin}`,(response)=>{
+    callback(response);
   });
 }
 
@@ -49,7 +71,6 @@ function fixedEncodeURIComponent(str) {
     return '%' + c.charCodeAt(0).toString(16);
   }).replace(/\*/g,''); //If there's an asterisk, it will fail, encoded or not
 }
-
 
 function makeAmazonRequest(operation, customArgs, callback) {
   let base = 'http://webservices.amazon.com/onca/xml?';
@@ -82,7 +103,9 @@ function generateQueryArgs(operation, customArgs) {
   let standardArgs = `Service=AWSECommerceService&AWSAccessKeyId=${AMAZON_PUBLIC_KEY}&Version=2013-08-01&AssociateTag=${AMAZON_TAG}`;
   //They don't allow price search on kindle books! SearchIndex=KindleStore :(
   if (operation === 'ItemSearch') standardArgs += '&SearchIndex=Books';
-  if (operation === 'ItemLookup') standardArgs += '&ResponseGroup=Offers'
+  else if (operation === 'ItemLookup') {
+    if (customArgs.indexOf('ResponseGroup') < 0) standardArgs += '&ResponseGroup=Offers';
+  }
   let args = standardArgs + '&Operation=' + operation + '&' + customArgs;
   let timestamp = new Date().toISOString().replace(/(\.)(\d)+/, "");
   args += '&Timestamp=' + timestamp;

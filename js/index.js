@@ -214,6 +214,10 @@ function insertBook(book, view) {
   let author = stringifyAuthors($(book).find('book authors'));
   let isbn = $(book).find('book isbn').text();
   let imageSrc = $(book).find('book>image_url').text();
+  if (imageSrc === placeholderImage) {
+    getAmazonItemImage(asin,console.log);
+  }
+
   $(div).append(`<img src="${imageSrc}" class='book-image'>`);
   $(div).append('<div class="book-info valign">');
   let innerDiv = $(div).find('.book-info');
