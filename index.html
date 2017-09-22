@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Bibliophilic</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection">
+  <link type="text/css" rel="stylesheet" href="./css/index.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body>
+  <div class="splash-wrapper main-wrapper">
+    <div class="container row valign-wrapper">
+      <div class="col s12 content row">
+        <h1 class="center-align col s12">Bibliophilic</h1>
+        <div class="center-align col s12 row">
+          <form class="row col s12 m8 offset-m2 l6 offset-l3" action='javascript:newUser();' method='GET'>
+            <div class="input-field col s10">
+              <input type="text" name="goodreads_id">
+              <label for="goodreads_id">Goodreads ID or Profile URL</label>
+            </div>
+            <div class=" col s2 container">
+              <div class="input-field center-align">
+                <button class="btn" type="submit" name="button"><i class="material-icons">send</i></button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <p class='center-align col s12'>Enter your <a href="https://www.goodreads.com" target="_blank">Goodreads</a> <a href='javascript:;' class='tooltip' data-position="bottom" data-delay="50">User ID<span class='tooltiptext'>
+          This is found in the web address<br>of your Goodreads profile.<br> https://www.goodreads.com/user/show/<span class='highlight'>123456</span>&#8209name</span>
+        </a> to view prices & library availability for the books <strong>you</strong> want to read.</p>
+      </div>
+
+    </div>
+    <a id='author-credit' class='.hide-on-small-only' href="https://unsplash.com/@groosheck?utm_medium=referral&amp;utm_campaign=photographer-credit&amp;utm_content=creditBadge" target="_blank" rel="noopener noreferrer" title="Download free do whatever you want high-resolution photos from Michał Grosicki">
+      <span style="display:inline-block;padding:2px 3px;">
+        <svg xmlns="http://www.w3.org/2000/svg" style="height:12px;width:auto;position:relative;vertical-align:middle;top:-1px;fill:white;" viewBox="0 0 32 32">
+          <title></title>
+          <path d="M20.8 18.1c0 2.7-2.2 4.8-4.8 4.8s-4.8-2.1-4.8-4.8c0-2.7 2.2-4.8 4.8-4.8 2.7.1 4.8 2.2 4.8 4.8zm11.2-7.4v14.9c0 2.3-1.9 4.3-4.3 4.3h-23.4c-2.4 0-4.3-1.9-4.3-4.3v-15c0-2.3 1.9-4.3 4.3-4.3h3.7l.8-2.3c.4-1.1 1.7-2 2.9-2h8.6c1.2 0 2.5.9 2.9 2l.8 2.4h3.7c2.4 0 4.3 1.9 4.3 4.3zm-8.6 7.5c0-4.1-3.3-7.5-7.5-7.5-4.1 0-7.5 3.4-7.5 7.5s3.3 7.5 7.5 7.5c4.2-.1 7.5-3.4 7.5-7.5z"></path>
+        </svg>
+      </span>
+      <span style="display:inline-block;padding:2px 3px;">Michał Grosicki</span>
+    </a>
+  </div>
+
+  <div class="main-wrapper info-wrapper row">
+    <div class="user-info col m3 s12 row">
+      <form class="row col s12" action="javascript:newUser();">
+        <div class="input-field col s10 m8">
+          <input type="text" name="goodreads_id">
+        </div>
+        <div class="input-field col s2 m4">
+          <button class="btn" type="submit" name="submit"><i class="material-icons">send</i></button>
+        </div>
+      </form>
+      <div class="row col s6 m12">
+        <img>
+      </div>
+      <div class="row col 6 m12">
+        <h4></h4>
+        <p></p>
+      </div>
+    </div>
+    <div class="result-container col m9 s12 row"></div>
+  </div>
+
+  <div class="main-wrapper thinking-wrapper container">
+    <div class="preloader-wrapper big active loader">
+      <div class="spinner-layer spinner-blue">
+        <div class="circle-clipper left">
+          <div class="circle"></div>
+        </div><div class="gap-patch">
+          <div class="circle"></div>
+        </div><div class="circle-clipper right">
+          <div class="circle"></div>
+        </div>
+      </div>
+
+      <div class="spinner-layer spinner-red">
+        <div class="circle-clipper left">
+          <div class="circle"></div>
+        </div><div class="gap-patch">
+          <div class="circle"></div>
+        </div><div class="circle-clipper right">
+          <div class="circle"></div>
+        </div>
+      </div>
+
+      <div class="spinner-layer spinner-yellow">
+        <div class="circle-clipper left">
+          <div class="circle"></div>
+        </div><div class="gap-patch">
+          <div class="circle"></div>
+        </div><div class="circle-clipper right">
+          <div class="circle"></div>
+        </div>
+      </div>
+
+      <div class="spinner-layer spinner-green">
+        <div class="circle-clipper left">
+          <div class="circle"></div>
+        </div><div class="gap-patch">
+          <div class="circle"></div>
+        </div><div class="circle-clipper right">
+          <div class="circle"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript" src="./js/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="./js/materialize.min.js"></script>
+  <script type="text/javascript" src='./js/sha256.js'></script>
+  <script type="text/javascript" src='./js/amazon.js'></script>
+  <script type="text/javascript" src='./js/goodreads.js'></script>
+  <script type="text/javascript" src="./js/index.js"></script>
+</body>
+
+</html>

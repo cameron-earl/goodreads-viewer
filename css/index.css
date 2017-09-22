@@ -1,0 +1,270 @@
+body
+{
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+
+    background: #f0eee1;
+    background: linear-gradient(to bottom,#fffbfa,#daccb1) fixed;
+}
+
+.main-wrapper
+{
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+
+    width: 100%;
+    margin: 0;
+}
+
+.thinking-wrapper
+{
+    position: fixed;
+    z-index: 1;
+    bottom: 0;
+
+    overflow: hidden;
+
+    background-color: rgba(255,255,255,.9);
+}
+
+.loader
+{
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    margin: auto;
+}
+
+.btn
+{
+    padding: 0 10px;
+}
+
+.splash-wrapper
+{
+    bottom: 0;
+
+    background: #f0eee1 url('../images/michal-grosicki-366027-min.jpg') no-repeat center center fixed;
+    background-size: cover;
+}
+
+.splash-wrapper .content-wrapper
+{
+    min-width: 350px;
+    min-height: 60vh;
+}
+
+h1
+{
+    font-family: 'SortsMillGoudy-Regular', serif;
+}
+
+/* Tooltip container */
+.tooltip
+{
+    position: relative;
+
+    display: inline-block;
+
+    border-bottom: 1px dotted rgba(0,0,0,.5);
+}
+
+.tooltiptext > span
+{
+    color: #0f9;
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext
+{
+    /* Position the tooltip text */
+    position: absolute;
+    z-index: 1;
+    top: 30px;
+    left: 50%;
+
+    visibility: hidden;
+    /*width: 400px;*/
+
+    margin-left: -50%;
+    padding: 5px;
+
+    transition: opacity 1s;
+    text-align: center;
+    /* Fade in tooltip */
+
+    opacity: 0;
+    color: #fff;
+    border-radius: 6px;
+    background-color: rgba(0,0,0,.5);
+}
+
+/* Tooltip arrow */
+.tooltip .tooltiptext::after
+{
+    position: absolute;
+    bottom: 100%;
+    left: 8%;
+
+    margin-left: -5px;
+
+    content: '';
+
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent rgba(0,0,0,.5) transparent;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext
+{
+    visibility: visible;
+
+    opacity: 1;
+}
+
+#author-credit
+{
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 1.2;
+
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+
+    display: inline-block;
+
+    padding: 4px 6px;
+
+    text-decoration: none;
+
+    color: white;
+    border-radius: 3px;
+    background-color: rgba(0,0,0,.3);
+}
+
+#author-credit:hover
+{
+    background-color: black;
+}
+
+.error
+{
+    background-color: rgba(255,0,0,.6);
+}
+
+.hidden
+{
+    display: none;
+}
+
+.info-wrapper
+{
+    margin-bottom: 0;
+}
+
+.user-info form
+{
+    margin-bottom: 0;
+}
+
+.user-info h4
+{
+    margin: 0;
+}
+
+div.input-field.col
+{
+    padding: 0;
+}
+
+div.result-container.col
+{
+    min-height: 100vh;
+    margin-bottom: 0;
+    padding: 0;
+
+    background-color: white;
+}
+
+div.result-container div.collection
+{
+    margin-top: 0;
+}
+
+div.result-container > div.active
+{
+    padding: 0;
+}
+
+.shelves > a
+{
+    cursor: pointer;
+}
+
+ul.tabs > li.tab > a
+{
+    color: #bbb;
+}
+
+ul.tabs > li.tab > a.active,
+ul.tabs > li.tab > a:hover
+{
+    color: #444;
+}
+
+div.collection-item.valign-wrapper
+{
+    padding: 0 20px 0 0;
+}
+
+.collection-item img
+{
+    display: inline-block;
+
+    height: 80px;
+}
+
+.book-info
+{
+    display: inline-block;
+
+    margin: 10px 20px 10px 15px;
+}
+
+span.stars,
+span.stars span
+{
+    display: block;
+
+    width: 80px;
+    height: 16px;
+
+    background: url('../images/stars.svg') 0 -16px repeat-x;
+}
+
+span.stars.avg,
+span.stars.avg span
+{
+    background: url('../images/stars2.svg') 0 -16px repeat-x;
+}
+
+span.stars span,
+span.stars.avg span
+{
+    background-position: 0 0;
+}
+
+@font-face
+{
+    font-family: 'SortsMillGoudy-Regular';
+
+    src: url('../fonts/SortsMillGoudy-Regular.ttf')  format('truetype');
+}
