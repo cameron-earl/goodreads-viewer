@@ -5,23 +5,59 @@ let AMAZON_PUBLIC_KEY;
 let AMAZON_PRIVATE_KEY;
 let AMAZON_TAG;
 
-//Finds the price of an book described by the object (ISBN, Title, Author)
-function getAmazonPrice(argsObj, callback) {
-  let asin;
-  let args = objToArgString(argsObj);
-  makeAmazonRequest('ItemSearch', args, (response) => {
-    let items = $(response).find('Item');
-    let asin = $(items[0]).find('ASIN').text();
-    let url = $($(items[0]).find('ItemLink')[0]).find('URL').text();
-    makeAmazonRequest('ItemLookup', `ItemId=${asin}`, (lookup) => {
-      let price = $(lookup).find('LowestNewPrice>FormattedPrice').text();
-      callback({
-        'price': price,
-        'url': url
-      });
-    })
-  });
+//argsObj should include ISBN, Title, & Author
+function requestBookItem(argsObj, cb) {
+  makeAmazonRequest('ItemSearch', objToArgString(argsObj), r => cb($(r).find('Item')[0]));
 }
+
+function requestItemOffer(item, callback) {
+  let asin = getItemAsin(item);
+  makeAmazonRequest('ItemLookup', `ItemId=${asin}`, callback);
+}
+
+//Finds the price of an book described by the object (ISBN, Title, Author)
+function requestItemPrice(item, callback) {
+  requestItemOffer(item, (offer)=>{
+    callback(getOfferPrice(offer));
+  })
+}
+
+function requestImages(item, callback) {
+  let asin = getItemAsin(item);
+  makeAmazonRequest('ItemLookup', `ResponseGroup=Images&ItemId=${asin}`, callback);
+}
+
+function makeAmazonRequest(operation, customArgs, callback) {
+  let base = 'http://webservices.amazon.com/onca/xml?';
+  let args = generateQueryArgs(operation, customArgs);
+  let signature = '&Signature=' + getSignature(args, AMAZON_PRIVATE_KEY);
+  let url = base + args + signature;
+  completeAmazonRequest(url, callback);
+}
+
+// If error due to throttling, keeps calling until successful
+function completeAmazonRequest(url, callback) {
+  $.get(url)
+    .done(callback)
+    .fail((e) => {
+      if (e.status === 503) {
+        delay = Math.floor(Math.random() * 1000) + 500; //0.5-1.5sec
+        setTimeout(completeAmazonRequest(url, callback), delay);
+      } else if (e.status === 403) {
+        console.log("Malformed request! " + url);
+        console.log(e);
+      } else {
+        console.log(e);
+        console.log($(e.responseText).find('error').text());
+      };
+    });
+}
+
+const getItemAsin = (item) => $($(item).find('ASIN')[0]).text();
+
+const getItemUrl = (item) => $($(item).find('ItemLink')[0]).find('URL').text();
+
+const getOfferPrice = (offer) => $(offer).find('LowestNewPrice>FormattedPrice').text();
 
 //Takes book information (ISBN, Title, Author) and creates part of a query
 function objToArgString(argsObj) {
@@ -45,36 +81,9 @@ function objToArgString(argsObj) {
 
 //Encodes more characters than the standard encodeURIComponent
 function fixedEncodeURIComponent(str) {
-  return encodeURIComponent(str).replace(/[!'()]/g, function(c) {
-    return '%' + c.charCodeAt(0).toString(16);
-  }).replace(/\*/g,''); //If there's an asterisk, it will fail, encoded or not
-}
-
-
-function makeAmazonRequest(operation, customArgs, callback) {
-  let base = 'http://webservices.amazon.com/onca/xml?';
-  let args = generateQueryArgs(operation, customArgs);
-  let signature = '&Signature=' + getSignature(args, AMAZON_PRIVATE_KEY);
-  let url = base + args + signature;
-  completeAmazonRequest(url, callback);
-}
-
-// If error due to throttling, keeps calling until successful
-function completeAmazonRequest(url, callback) {
-  $.get(url)
-    .done(callback)
-    .fail((e) => {
-      if (e.status === 503) {
-        delay = Math.floor(Math.random() * 1000) + 500; //0.5-1.5sec
-        setTimeout(completeAmazonRequest(url, callback), delay);
-      } else if (e.status === 403) {
-        console.log("Malformed request!" + url);
-        console.log(e);
-      } else {
-        console.log(e);
-        console.log($(e.responseText).find('error').text());
-      };
-    });
+  return encodeURIComponent(str).replace(/[!'()]/g,
+    c => ('%' + c.charCodeAt(0).toString(16))
+  ).replace(/\*/g,''); //If there's an asterisk, it will fail, encoded or not
 }
 
 //Pretties up the query string for the signature hash
@@ -82,7 +91,9 @@ function generateQueryArgs(operation, customArgs) {
   let standardArgs = `Service=AWSECommerceService&AWSAccessKeyId=${AMAZON_PUBLIC_KEY}&Version=2013-08-01&AssociateTag=${AMAZON_TAG}`;
   //They don't allow price search on kindle books! SearchIndex=KindleStore :(
   if (operation === 'ItemSearch') standardArgs += '&SearchIndex=Books';
-  if (operation === 'ItemLookup') standardArgs += '&ResponseGroup=Offers'
+  else if (operation === 'ItemLookup') {
+    if (customArgs.indexOf('ResponseGroup') < 0) standardArgs += '&ResponseGroup=Offers';
+  }
   let args = standardArgs + '&Operation=' + operation + '&' + customArgs;
   let timestamp = new Date().toISOString().replace(/(\.)(\d)+/, "");
   args += '&Timestamp=' + timestamp;

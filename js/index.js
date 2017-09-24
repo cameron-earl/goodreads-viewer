@@ -1,5 +1,6 @@
 const USER_INPUT = $('.info-wrapper input[name="goodreads_id"]');
 const LOAD_AMAZON_PRICES = true;
+const PLACEHOLDER_IMAGE = 'https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png';
 
 let currentUser;
 let loadedShelves;
@@ -214,10 +215,13 @@ function insertBook(book, view) {
   let author = stringifyAuthors($(book).find('book authors'));
   let isbn = $(book).find('book isbn').text();
   let imageSrc = $(book).find('book>image_url').text();
-  $(div).append(`<img src="${imageSrc}" class='book-image'>`);
-  $(div).append('<div class="book-info valign">');
-  let innerDiv = $(div).find('.book-info');
+
+  let img = $(`<img src="${imageSrc}" class='book-image'>`);
+  $(div).append(img);
+  let innerDiv = $('<div class="book-info valign">');
   $(innerDiv).append(`<span>${title} by ${author}</span>`);
+  $(div).append(innerDiv);
+
   if (rating === '0') {
     if (+avgRating) {
       $(innerDiv).append(`<span class="stars avg tooltipped" data-position="top" data-delay="50" data-tooltip="Average Rating: ${avgRating}">${avgRating}</span>`);
@@ -232,22 +236,34 @@ function insertBook(book, view) {
   });
 
   if (LOAD_AMAZON_PRICES) {
+    let firstAuthor = $(book).find('book authors author:first-child name').text();
+
     $(innerDiv).append(`<span>Amazon: <span class='price'>loading...</span>`);
-    getAmazonPrice({
-      'title': title,
-      'author': author,
-      'isbn': isbn
-    }, (item) => {
-      let priceContainer = $(div).find('.price');
-      if (item.price.length) {
-        $(priceContainer).html(`<a href=${item.url} target="_blank">${item.price}</a>`);
-      } else if (item.url.length) {
-        $(priceContainer).html(`<a href='${item.url} target="_blank"'>Not available.</a>`);
-      } else {
-        $(priceContainer).html(`Not available.`);
+    let argsObj = {'title': title, 'author':firstAuthor, 'isbn':isbn};
+    requestBookItem(argsObj,amazonItem=>{
+      let url = getItemUrl(amazonItem);
+
+      if (imageSrc === PLACEHOLDER_IMAGE) {
+        requestImages(amazonItem, (imgObj)=> {
+          let url = $(imgObj).find('ItemLookupResponse > Items > Item > ImageSets > ImageSet[Category="primary"] > TinyImage > URL').text();
+          $(img).attr('src',url);
+        })
       }
+
+      requestItemOffer(amazonItem, offer => {
+        let priceContainer = $(div).find('.price');
+        let price = getOfferPrice(offer);
+        if (price.length) {
+          $(priceContainer).html(`<a href=${url} target="_blank">${price}</a>`);
+        } else if (url.length) {
+          $(priceContainer).html(`<a href='${url} target="_blank"'>Not available.</a>`);
+        } else {
+          $(priceContainer).html(`Not available.`);
+        }
+      });
     });
   }
+
   $(view).append(div);
 }
 
