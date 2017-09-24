@@ -256,7 +256,7 @@ function insertBook(book, view) {
         if (price.length) {
           $(priceContainer).html(`<a href=${url} target="_blank">${price}</a>`);
         } else if (url.length) {
-          $(priceContainer).html(`<a href='${url} target="_blank"'>Not available.</a>`);
+          $(priceContainer).html(`<a href=${url} target="_blank">Not available.</a>`);
         } else {
           $(priceContainer).html(`Not available.`);
         }
